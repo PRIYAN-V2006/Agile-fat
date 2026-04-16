@@ -1,0 +1,265 @@
+You’ve already done most of the work (your repo shows Java + Maven + Docker + Kubernetes). Now I’ll give you exact steps + missing pieces to match the question fully so you can write it in exam/document.
+
+
+---
+
+✅ Complete Steps for Employee Leave Management System
+
+Step 1: Project Structure (Maven)
+
+src/
+ ├── main/java/com/example/
+ │     ├── Employee.java
+ │     ├── LeaveRequest.java
+ │     ├── LeaveService.java
+ │
+ ├── test/java/com/example/
+ │     ├── LeaveServiceTest.java
+
+
+---
+
+Step 2: Java Code
+
+Employee.java
+
+package com.example;
+
+public class Employee {
+    public String name;
+    public int leaveBalance = 20;
+
+    public Employee(String name) {
+        this.name = name;
+    }
+}
+
+
+---
+
+LeaveRequest.java
+
+package com.example;
+
+public class LeaveRequest {
+    public int days;
+    public String status;
+
+    public LeaveRequest(int days) {
+        this.days = days;
+        this.status = "PENDING";
+    }
+}
+
+
+---
+
+LeaveService.java
+
+package com.example;
+
+public class LeaveService {
+
+    public String applyLeave(Employee emp, LeaveRequest req) {
+        if (req.days <= emp.leaveBalance) {
+            emp.leaveBalance -= req.days;
+            req.status = "APPROVED";
+        } else {
+            req.status = "REJECTED";
+        }
+        return req.status;
+    }
+}
+
+
+---
+
+Step 3: JUnit Test Cases
+
+package com.example;
+
+import org.junit.Test;
+import static org.junit.Assert.*;
+
+public class LeaveServiceTest {
+
+    @Test
+    public void testApproved() {
+        Employee emp = new Employee("A");
+        LeaveRequest req = new LeaveRequest(5);
+        LeaveService service = new LeaveService();
+
+        assertEquals("APPROVED", service.applyLeave(emp, req));
+    }
+
+    @Test
+    public void testRejected() {
+        Employee emp = new Employee("A");
+        LeaveRequest req = new LeaveRequest(25);
+        LeaveService service = new LeaveService();
+
+        assertEquals("REJECTED", service.applyLeave(emp, req));
+    }
+}
+
+
+---
+
+Step 4: Maven (pom.xml)
+
+Make sure this is included:
+
+<dependencies>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.2</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+
+Run build:
+
+mvn clean install
+
+
+---
+
+Step 5: CI/CD Pipeline (GitHub Actions)
+
+Create file:
+
+.github/workflows/main.yml
+
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+
+    - name: Build with Maven
+      run: mvn clean install
+
+
+---
+
+Step 6: Docker
+
+Dockerfile
+
+FROM openjdk:17
+COPY target/*.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+
+Build & Push
+
+docker build -t yourdockerhub/leave-app .
+docker push yourdockerhub/leave-app
+
+
+---
+
+Step 7: Kubernetes
+
+deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leave-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: leave-app
+  template:
+    metadata:
+      labels:
+        app: leave-app
+    spec:
+      containers:
+      - name: leave-app
+        image: yourdockerhub/leave-app
+        ports:
+        - containerPort: 8080
+
+
+---
+
+service.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: leave-service
+spec:
+  type: NodePort
+  selector:
+    app: leave-app
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30007
+
+
+---
+
+Step 8: Git Commands (You already did)
+
+git add .
+git commit -m "Project completed"
+git push origin main
+
+
+---
+
+⚠️ Important Fix (Based on Your Screenshot)
+
+You uploaded the target/ folder ❌
+👉 This should NOT be in GitHub.
+
+Add .gitignore
+
+target/
+
+Then:
+
+git rm -r --cached target
+git commit -m "Removed target folder"
+git push
+
+
+---
+
+✅ Final Summary (Write in Exam)
+
+Developed leave request & approval system in Java
+
+Implemented JUnit test cases
+
+Used Maven for build automation
+
+Configured CI pipeline using GitHub Actions
+
+Containerized app using Docker
+
+Deployed using Kubernetes
+
+
+
+---
+
+If you want, I can next give you: ✅ Perfect README.md (to get extra marks)
+✅ Jenkins pipeline version (if asked instead of GitHub Actions)
