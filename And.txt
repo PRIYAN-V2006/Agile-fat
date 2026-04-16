@@ -1,0 +1,205 @@
+Here’s a clean, ready-to-write answer based on the question in your image.
+
+
+---
+
+Employee Leave Management System
+
+1. Leave Request and Approval Logic (Java)
+
+class Employee {
+    String name;
+    int leaveBalance = 20;
+
+    Employee(String name) {
+        this.name = name;
+    }
+}
+
+class LeaveRequest {
+    int days;
+    String status;
+
+    LeaveRequest(int days) {
+        this.days = days;
+        this.status = "PENDING";
+    }
+}
+
+class LeaveService {
+    public String applyLeave(Employee emp, LeaveRequest req) {
+        if (req.days <= emp.leaveBalance) {
+            req.status = "APPROVED";
+            emp.leaveBalance -= req.days;
+        } else {
+            req.status = "REJECTED";
+        }
+        return req.status;
+    }
+}
+
+
+---
+
+2. JUnit Test Cases
+
+import static org.junit.Assert.*;
+import org.junit.Test;
+
+public class LeaveServiceTest {
+
+    @Test
+    public void testLeaveApproved() {
+        Employee emp = new Employee("John");
+        LeaveRequest req = new LeaveRequest(5);
+        LeaveService service = new LeaveService();
+
+        assertEquals("APPROVED", service.applyLeave(emp, req));
+    }
+
+    @Test
+    public void testLeaveRejected() {
+        Employee emp = new Employee("John");
+        LeaveRequest req = new LeaveRequest(25);
+        LeaveService service = new LeaveService();
+
+        assertEquals("REJECTED", service.applyLeave(emp, req));
+    }
+}
+
+
+---
+
+3. CI/CD Pipeline Setup
+
+GitHub Setup
+
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin <repo-url>
+git push -u origin main
+
+
+---
+
+GitHub Actions Workflow (.github/workflows/main.yml)
+
+name: Java CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+
+    - name: Build with Maven
+      run: mvn clean install
+
+
+---
+
+Maven Build (pom.xml dependencies)
+
+<dependencies>
+    <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.13.2</version>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+
+
+---
+
+4. Docker & Kubernetes Deployment
+
+Dockerfile
+
+FROM openjdk:17
+COPY target/app.jar app.jar
+ENTRYPOINT ["java","-jar","/app.jar"]
+
+
+---
+
+Build & Push Docker Image
+
+docker build -t yourdockerhub/leave-app .
+docker push yourdockerhub/leave-app
+
+
+---
+
+Kubernetes Deployment (deployment.yaml)
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: leave-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: leave-app
+  template:
+    metadata:
+      labels:
+        app: leave-app
+    spec:
+      containers:
+      - name: leave-app
+        image: yourdockerhub/leave-app
+        ports:
+        - containerPort: 8080
+
+
+---
+
+Service (service.yaml)
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: leave-service
+spec:
+  type: NodePort
+  selector:
+    app: leave-app
+  ports:
+    - port: 80
+      targetPort: 8080
+      nodePort: 30007
+
+
+---
+
+Summary
+
+Implemented leave approval logic with balance validation
+
+Created JUnit tests for approval/rejection
+
+Automated build using GitHub Actions & Maven
+
+Containerized using Docker
+
+Deployed using Kubernetes
+
+
+
+---
+
+If you want, I can also convert this into a **PDF format for submission** or add diagrams (CI/CD pipeline flow).
